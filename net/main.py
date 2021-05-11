@@ -8,7 +8,7 @@ from torch.backends import cudnn
 from torch import optim
 import torch,warnings
 from torch import nn
-#from tensorboardX import SummaryWriter
+from tensorboardX import SummaryWriter
 import torchvision.utils as vutils
 warnings.filterwarnings('ignore')
 from option import opt,model_name,log_dir
@@ -74,8 +74,8 @@ def train(net,loader_train,loader_test,optim,criterion):
 		losses.append(loss.item())
 		print(f'\rtrain loss : {loss.item():.5f}| step :{step}/{opt.steps}|lr :{lr :.7f} |time_used :{(time.time()-start_time)/60 :.1f}',end='',flush=True)
 
-		#with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
-		#	writer.add_scalar('data/loss',loss,step)
+		with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
+			writer.add_scalar('data/loss',loss,step)
 
 		if step % opt.eval_step ==0 :
 			with torch.no_grad():
@@ -83,14 +83,14 @@ def train(net,loader_train,loader_test,optim,criterion):
 
 			print(f'\nstep :{step} |ssim:{ssim_eval:.4f}| psnr:{psnr_eval:.4f}')
 
-			# with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
-			# 	writer.add_scalar('data/ssim',ssim_eval,step)
-			# 	writer.add_scalar('data/psnr',psnr_eval,step)
-			# 	writer.add_scalars('group',{
-			# 		'ssim':ssim_eval,
-			# 		'psnr':psnr_eval,
-			# 		'loss':loss
-			# 	},step)
+			with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
+				writer.add_scalar('data/ssim',ssim_eval,step)
+				writer.add_scalar('data/psnr',psnr_eval,step)
+				writer.add_scalars('group',{
+					'ssim':ssim_eval,
+					'psnr':psnr_eval,
+					'loss':loss
+				},step)
 			ssims.append(ssim_eval)
 			psnrs.append(psnr_eval)
 			if ssim_eval > max_ssim and psnr_eval > max_psnr :
@@ -116,22 +116,22 @@ def test(net,loader_test,max_psnr,max_ssim,step):
 	torch.cuda.empty_cache()
 	ssims=[]
 	psnrs=[]
-	#s=True
+	s=True
 	for i ,(inputs,targets) in enumerate(loader_test):
 		inputs=inputs.to(opt.device);targets=targets.to(opt.device)
 		pred=net(inputs)
-		# # print(pred)
-		# tfs.ToPILImage()(torch.squeeze(targets.cpu())).save('111.png')
-		# vutils.save_image(targets.cpu(),'target.png')
-		# vutils.save_image(pred.cpu(),'pred.png')
+		# print(pred)
+		tfs.ToPILImage()(torch.squeeze(targets.cpu())).save('111.png')
+		vutils.save_image(targets.cpu(),'target.png')
+		vutils.save_image(pred.cpu(),'pred.png')
 		ssim1=ssim(pred,targets).item()
 		psnr1=psnr(pred,targets)
 		ssims.append(ssim1)
 		psnrs.append(psnr1)
-		#if (psnr1>max_psnr or ssim1 > max_ssim) and s :
-		#		ts=vutils.make_grid([torch.squeeze(inputs.cpu()),torch.squeeze(targets.cpu()),torch.squeeze(pred.clamp(0,1).cpu())])
-		#		vutils.save_image(ts,f'samples/{model_name}/{step}_{psnr1:.4}_{ssim1:.4}.png')
-		#		s=False
+		if (psnr1>max_psnr or ssim1 > max_ssim) and s :
+				ts=vutils.make_grid([torch.squeeze(inputs.cpu()),torch.squeeze(targets.cpu()),torch.squeeze(pred.clamp(0,1).cpu())])
+				vutils.save_image(ts,f'samples/{model_name}/{step}_{psnr1:.4}_{ssim1:.4}.png')
+				s=False
 	return np.mean(ssims) ,np.mean(psnrs)
 
 
