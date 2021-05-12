@@ -33,7 +33,7 @@ def tensorShow(tensors,titles=None):
         plt.show()
 
 class RESIDE_Dataset(data.Dataset):
-    def __init__(self,path,train,size=crop_size,format='.png'):
+    def __init__(self,path,train,size=crop_size,format='.png', SOTS=False):
         super(RESIDE_Dataset,self).__init__()
         self.size=size
         print('crop size',size)
@@ -41,7 +41,10 @@ class RESIDE_Dataset(data.Dataset):
         self.format=format
         self.haze_imgs_dir=os.listdir(os.path.join(path,'hazy'))
         self.haze_imgs=[os.path.join(path,'hazy',img) for img in self.haze_imgs_dir]
-        self.clear_dir=os.path.join(path,'clear')
+        if SOTS:
+            self.clear_dir = os.path.join(path, 'gt')
+        else:
+            self.clear_dir = os.path.join(path, 'clear')
     def __getitem__(self, index):
         haze=Image.open(self.haze_imgs[index])
         if isinstance(self.size,int):
@@ -81,10 +84,10 @@ print(pwd)
 # path='/home/zhilin007/VS/FFA-Net/data'#path to your 'data' folder
 path='./data/dehaze'
 ITS_train_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'RESIDE/ITS_standard'),train=True,size=crop_size),batch_size=BS,shuffle=True)
-ITS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/indoor'),train=False,size='whole img'),batch_size=1,shuffle=False)
+ITS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/indoor'),train=False,size='whole img', SOTS=True),batch_size=1,shuffle=False)
 
 OTS_train_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'RESIDE/OTS'),train=True,format='.jpg'),batch_size=BS,shuffle=True)
-OTS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/outdoor'),train=False,size='whole img',format='.png'),batch_size=1,shuffle=False)
+OTS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/outdoor'),train=False,size='whole img',format='.png', SOTS=True),batch_size=1,shuffle=False)
 
 if __name__ == "__main__":
     pass
