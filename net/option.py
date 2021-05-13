@@ -178,11 +178,11 @@ parser.add_argument("--use_adain_output_for_spade", type=str2bool, nargs='?',
 						const=True, default=False,
 						help="Use adain output for spade input")
 parser.add_argument("--use_zero_mean_spade", type=str2bool, nargs='?',
-					const=True, default=False,
+					const=True, default=True,
 					help="Use zero mean spade")
 
 parser.add_argument("--use_our_block", type=str2bool, nargs='?',
-					const=True, default=True,
+					const=True, default=False,
 					help="Use zero mean spade")
 
 opt=parser.parse_args()
