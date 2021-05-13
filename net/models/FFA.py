@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+from models.OurBlock import HierarchicalInstanceNorm
 
 def default_conv(in_channels, out_channels, kernel_size, bias=True):
     return nn.Conv2d(in_channels, out_channels, kernel_size,padding=(kernel_size//2), bias=bias)
@@ -49,10 +50,17 @@ class Block(nn.Module):
         res=self.palayer(res)
         res += x 
         return res
+
 class Group(nn.Module):
-    def __init__(self, conv, dim, kernel_size, blocks):
+    def __init__(self, conv, dim, kernel_size, blocks, opt=None):
         super(Group, self).__init__()
-        modules = [ Block(conv, dim, kernel_size)  for _ in range(blocks)]
+
+        if opt.use_our_block:
+            modules = [HierarchicalInstanceNorm(kernel_size=3, padding=1, bias=True,
+                                            reduction=1, in_channels=dim, out_channels=dim, opt=opt) for _ in range(blocks)]
+        else:
+            modules = [Block(conv, dim, kernel_size) for _ in range(blocks)]
+
         modules.append(conv(dim, dim, kernel_size))
         self.gp = nn.Sequential(*modules)
     def forward(self, x):
@@ -61,16 +69,16 @@ class Group(nn.Module):
         return res
 
 class FFA(nn.Module):
-    def __init__(self,gps,blocks,conv=default_conv):
+    def __init__(self,gps,blocks,conv=default_conv, opt=None):
         super(FFA, self).__init__()
         self.gps=gps
         self.dim=64
         kernel_size=3
         pre_process = [conv(3, self.dim, kernel_size)]
         assert self.gps==3
-        self.g1= Group(conv, self.dim, kernel_size,blocks=blocks)
-        self.g2= Group(conv, self.dim, kernel_size,blocks=blocks)
-        self.g3= Group(conv, self.dim, kernel_size,blocks=blocks)
+        self.g1= Group(conv, self.dim, kernel_size,blocks=blocks, opt=opt)
+        self.g2= Group(conv, self.dim, kernel_size,blocks=blocks, opt=opt)
+        self.g3= Group(conv, self.dim, kernel_size,blocks=blocks, opt=opt)
         self.ca=nn.Sequential(*[
             nn.AdaptiveAvgPool2d(1),
             nn.Conv2d(self.dim*self.gps,self.dim//16,1,padding=0),

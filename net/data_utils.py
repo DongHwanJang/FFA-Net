@@ -84,10 +84,10 @@ print(pwd)
 # path='/home/zhilin007/VS/FFA-Net/data'#path to your 'data' folder
 path='./data/dehaze'
 ITS_train_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'RESIDE/ITS_standard'),train=True,size=crop_size),batch_size=BS,shuffle=True)
-ITS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/indoor'),train=False,size='whole img', SOTS=True),batch_size=1,shuffle=False)
+ITS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/indoor'),train=False,size='whole img', SOTS=True),batch_size=BS,shuffle=False)
 
 OTS_train_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'RESIDE/OTS'),train=True,format='.jpg'),batch_size=BS,shuffle=True)
-OTS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/outdoor'),train=False,size='whole img',format='.png', SOTS=True),batch_size=1,shuffle=False)
+OTS_test_loader=DataLoader(dataset=RESIDE_Dataset(os.path.join(path,'SOTS/outdoor'),train=False,size='whole img',format='.png', SOTS=True),batch_size=BS,shuffle=False)
 
 if __name__ == "__main__":
     pass

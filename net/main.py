@@ -18,7 +18,7 @@ print('log_dir :',log_dir)
 print('model_name:',model_name)
 
 models_={
-	'ffa':FFA(gps=opt.gps,blocks=opt.blocks),
+	'ffa':FFA(gps=opt.gps,blocks=opt.blocks, opt=opt),
 }
 loaders_={
 	'its_train':ITS_train_loader,
