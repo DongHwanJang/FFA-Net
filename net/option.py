@@ -26,6 +26,8 @@ parser.add_argument('--device',type=str,default='Automatic detection')
 parser.add_argument("--resume", type=str2bool, nargs='?',
 						const=True, default=False,
 						help="Activate nice mode.")
+parser.add_argument('--resume_dir',type=str,default='./trained_models/')
+
 parser.add_argument('--eval_step',type=int,default=5000)
 parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 parser.add_argument('--model_dir',type=str,default='./trained_models/')
@@ -188,7 +190,7 @@ parser.add_argument("--use_our_block", type=str2bool, nargs='?',
 
 opt=parser.parse_args()
 opt.device='cuda' if torch.cuda.is_available() else 'cpu'
-model_name=opt.trainset+'_'+opt.net.split('.')[0]+'_'+str(opt.gps)+'_'+str(opt.blocks)+'_'+str(opt.desc)+'_'+str(randint(1,1000))
+model_name=opt.trainset+'_'+opt.net.split('.')[0]+'_'+str(opt.gps)+'_'+str(opt.blocks)+'_'+str(opt.desc)+'_'+str(randint(1,10000))
 opt.model_dir=opt.model_dir+model_name+'.pk'
 log_dir='logs/'+model_name
 

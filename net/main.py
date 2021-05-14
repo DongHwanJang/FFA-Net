@@ -39,7 +39,7 @@ def train(net,loader_train,loader_test,optim,criterion):
 	max_psnr=0
 	ssims=[]
 	psnrs=[]
-	if opt.resume and os.path.exists(opt.model_dir):
+	if opt.resume and os.path.exists(opt.resume_dir):
 		print(f'resume from {opt.model_dir}')
 		ckp=torch.load(opt.model_dir)
 		losses=ckp['losses']
