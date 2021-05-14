@@ -40,8 +40,8 @@ def train(net,loader_train,loader_test,optim,criterion):
 	ssims=[]
 	psnrs=[]
 	if opt.resume and os.path.exists(opt.resume_dir):
-		print(f'resume from {opt.model_dir}')
-		ckp=torch.load(opt.model_dir)
+		print(f'resume from {opt.resume_dir}')
+		ckp=torch.load(opt.resume_dir)
 		losses=ckp['losses']
 		net.load_state_dict(ckp['model'])
 		start_step=ckp['step']
