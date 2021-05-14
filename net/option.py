@@ -7,6 +7,7 @@ from torch import optim
 import torch,warnings
 from torch import nn
 import torchvision.utils as vutils
+from random import randint
 warnings.filterwarnings('ignore')
 
 def str2bool(v):
@@ -50,7 +51,7 @@ parser.add_argument("--cuda", type=str2bool, nargs='?',
 						help="Activate nice mode.")
 parser.add_argument('--threads', type=int, default=4, help='number of threads for data loader to use')
 parser.add_argument('--seed', type=int, default=5000, help='random seed to use. Default=123')
-parser.add_argument("--desc", type=str, default="no description")
+parser.add_argument("--desc", type=str, default="model")
 parser.add_argument("--save", type=str, default="results")
 parser.add_argument("--tanh", action="store_true")
 
@@ -92,7 +93,7 @@ parser.add_argument("--refine_group_num", type=int, default=1, help="Define seco
 
 ####### Module
 parser.add_argument("--use_skip", type=str2bool, nargs='?',
-						const=True, default=True,
+						const=True, default=False,
 						help="Activate nice mode.")
 parser.add_argument("--use_in", type=str2bool, nargs='?',
 						const=True, default=True,
@@ -133,17 +134,17 @@ parser.add_argument("--lambda_spade_var_loss", type=float, default=0)
 parser.add_argument("--lambda_flop_loss", type=float, default=0.001)
 
 parser.add_argument("--use_regul_loss", type=str2bool, nargs='?',
-						const=True, default=True,
+						const=True, default=False,
 						help="Activate nice mode.")
 parser.add_argument("--use_val_max_loss", type=str2bool, nargs='?',
-						const=True, default=True,
+						const=True, default=False,
 						help="Activate nice mode.")
 parser.add_argument("--use_flop_loss", type=str2bool, nargs='?',
 					const=True, default=False,
 					help="Activate nice mode.")
 
 parser.add_argument("--use_residual", type=str2bool, nargs='?',
-						const=True, default=True,
+						const=True, default=False,
 						help="Activate nice mode.")
 parser.add_argument("--use_residual_ks_5", type=str, nargs='?',
 						default=None, choices=[None, '33','5'],
@@ -172,7 +173,7 @@ parser.add_argument('--eval_batch', action='store_true', help='use cuda?')
 parser.add_argument('--ckt', type=str)
 
 parser.add_argument("--use_bias", type=str2bool, nargs='?',
-						const=True, default=False,
+						const=True, default=True,
 						help="Use bias=T")
 parser.add_argument("--use_adain_output_for_spade", type=str2bool, nargs='?',
 						const=True, default=False,
@@ -187,7 +188,7 @@ parser.add_argument("--use_our_block", type=str2bool, nargs='?',
 
 opt=parser.parse_args()
 opt.device='cuda' if torch.cuda.is_available() else 'cpu'
-model_name=opt.trainset+'_'+opt.net.split('.')[0]+'_'+str(opt.gps)+'_'+str(opt.blocks)
+model_name=opt.trainset+'_'+opt.net.split('.')[0]+'_'+str(opt.gps)+'_'+str(opt.blocks)+'_'+str(opt.desc)+'_'+str(randint(1,1000))
 opt.model_dir=opt.model_dir+model_name+'.pk'
 log_dir='logs/'+model_name
 
